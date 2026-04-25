@@ -1,0 +1,85 @@
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#1a1a2e',
+    'primaryTextColor': '#ffffff',
+    'primaryBorderColor': '#4ecca3',
+    'lineColor': '#4ecca3',
+    'tertiaryColor': '#1a1a2e',
+    'mainBkg': '#1a1a2e',
+    'nodeBorder': '#4ecca3',
+    'clusterBkg': '#1a1a2e',
+    'clusterBorder': 'transparent',
+    'fontSize': '14px'
+  }
+} }%%
+graph TB
+    %% --- Header ---
+    TITLE[[🧠 How LLMs Work]]
+    style TITLE fill:#4ecca3,color:#1a1a2e,stroke:#4ecca3,font-size:20px,font-weight:bold
+
+    TITLE --> USER
+
+    %% --- Input Section ---
+    subgraph INPUT
+        USER(👤 User Message)
+        CTX[📜 Full Context Window<br/>History + Instructions]
+        USER --> CTX
+    end
+
+    CTX --> MODEL
+
+    %% --- Processing ---
+    subgraph CORE
+        MODEL{{"⚙️ LLM Inference<br/>Stateless Transformer"}}
+        TOKENS(🔤 Token Prediction<br/>Next-word probability)
+        MODEL --> TOKENS
+    end
+
+    TOKENS --> RESP
+
+    %% --- Output & Limitation ---
+    subgraph OUTPUT
+        RESP(💬 Response Generated)
+        MEMORY["🚫 No Memory Retained<br/>Calls are independent"]
+        RESP --- MEMORY
+    end
+
+    MEMORY --> ISSUES
+
+    %% --- Analysis Section ---
+    ISSUES[[⚠️ Common LLM Issues]]
+    style ISSUES fill:#e94560,color:#ffffff,stroke:#e94560,font-weight:bold
+
+    ISSUES --> H
+    ISSUES --> C
+    ISSUES --> L
+
+    subgraph PITFALLS
+        H(🌀 Hallucinations<br/>Confident false facts)
+        C(📏 Context Limit<br/>Window exhaustion)
+        L(📍 Lost in Middle<br/>Attention decay)
+    end
+
+    %% --- Solutions ---
+    H --> HFIX
+    C --> CFIX
+    L --> LFIX
+
+    HFIX([✅ Ground with RAG<br/>or tool use])
+    CFIX([✅ Chunk input<br/>or use Long-Context])
+    LFIX([✅ Prioritize info<br/>at start or end])
+
+    %% --- Final Styling ---
+    style USER fill:#16213e,stroke:#4ecca3
+    style CTX fill:#16213e,stroke:#4ecca3
+    style MODEL fill:#0f3460,stroke:#4ecca3
+    style TOKENS fill:#0f3460,stroke:#4ecca3
+    style RESP fill:#16213e,stroke:#4ecca3
+    style MEMORY fill:#2a0a14,stroke:#e94560
+    style H fill:#2a0a14,stroke:#e94560
+    style C fill:#2a0a14,stroke:#e94560
+    style L fill:#2a0a14,stroke:#e94560
+    style HFIX fill:#0a2a1a,stroke:#4ecca3,color:#4ecca3
+    style CFIX fill:#0a2a1a,stroke:#4ecca3,color:#4ecca3
+    style LFIX fill:#0a2a1a,stroke:#4ecca3,color:#4ecca3
