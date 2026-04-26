@@ -6,6 +6,7 @@ import { Todo } from "@/types";
 export function useTodos() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [exportLoading, setExportLoading] = useState(false);
 
   const fetchTodos = async () => {
     const r = await api.get<Todo[]>("/todos/");
@@ -38,5 +39,22 @@ export function useTodos() {
     setTodos((prev) => prev.filter((t) => t.id !== id));
   };
 
-  return { todos, loading, createTodo, updateTodo, deleteTodo };
+  const exportTodosCSV = async () => {
+    setExportLoading(true);
+    try {
+      const r = await api.get("/todos/export/csv", { responseType: "blob" });
+      const url = URL.createObjectURL(r.data as Blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "todos.csv";
+      document.body.appendChild(anchor);
+      anchor.click();
+      URL.revokeObjectURL(url);
+      document.body.removeChild(anchor);
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  return { todos, loading, exportLoading, createTodo, updateTodo, deleteTodo, exportTodosCSV };
 }

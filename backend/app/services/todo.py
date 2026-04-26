@@ -1,3 +1,6 @@
+import csv
+import io
+
 from fastapi import HTTPException, status
 from sqlmodel import Session, select
 
@@ -20,7 +23,9 @@ def create_todo(data: TodoCreate, user_id: int, session: Session) -> Todo:
 def get_todo(todo_id: int, user_id: int, session: Session) -> Todo:
     todo = session.get(Todo, todo_id)
     if not todo or todo.user_id != user_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"
+        )
     return todo
 
 
@@ -38,3 +43,22 @@ def delete_todo(todo_id: int, user_id: int, session: Session) -> None:
     todo = get_todo(todo_id, user_id, session)
     session.delete(todo)
     session.commit()
+
+
+def export_todos_csv(user_id: int, session: Session) -> str:
+    todos = get_todos(user_id, session)
+    buffer = io.StringIO()
+    writer = csv.DictWriter(
+        buffer, fieldnames=["id", "title", "description", "completed"]
+    )
+    writer.writeheader()
+    for todo in todos:
+        writer.writerow(
+            {
+                "id": todo.id,
+                "title": todo.title,
+                "description": todo.description if todo.description is not None else "",
+                "completed": "true" if todo.completed else "false",
+            }
+        )
+    return buffer.getvalue()
